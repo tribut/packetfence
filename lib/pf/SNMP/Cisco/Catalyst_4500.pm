@@ -10,11 +10,6 @@ This module is currently only a placeholder, see pf::SNMP::Cisco::Catalyst_2960.
 
 We do not know the minimum required firmware version.
 
-=head1 BUGS AND LIMITATIONS
-
-Because a lot of code is shared with the 2960 make sure to check the BUGS AND LIMITATIONS section of
-L<pf::SNMP::Cisco::Catalyst_2960> also.
-
 =head1 CONFIGURATION AND ENVIRONMENT
 
 F<conf/switches.conf>
@@ -23,8 +18,15 @@ F<conf/switches.conf>
 
 use strict;
 use warnings;
+use diagnostics;
 use Log::Log4perl;
 use Net::SNMP;
+use Try::Tiny;
+
+use pf::accounting qw(node_accounting_current_sessionid);
+use pf::config;
+use pf::node qw(node_attributes);
+use pf::util::radius qw(perform_coa perform_disconnect);
 
 use base ('pf::SNMP::Cisco::Catalyst_2960');
 
@@ -88,3 +90,4 @@ USA.
 # vim: set shiftwidth=4:
 # vim: set expandtab:
 # vim: set backspace=indent,eol,start:
+
