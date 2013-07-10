@@ -2475,7 +2475,7 @@ Default behavior is to bounce the port
 =cut
 
 sub handleReAssignVlanTrapForWiredMacAuth {
-    my ($this, $ifIndex) = @_;
+    my ($this, $ifIndex, $mac) = @_;
     my $logger = Log::Log4perl::get_logger(ref($this));
 
     # TODO extract that behavior in a method call in pf::vlan so it can be overridden easily

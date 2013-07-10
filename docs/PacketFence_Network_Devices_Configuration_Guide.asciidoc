@@ -860,6 +860,12 @@ Radius server configuration:
   radius-server host 192.168.1.5 auth-port 1812 acct-port 1813 timeout 2 key useStrongerSecret 
   radius-server vsa send authentication 
 
+CoA configuration
+
+  aaa server radius dynamic-author
+   client 192.168.1.5 server-key useStrongerSecret
+  port 3799
+
 802.1x with MAC Authentication bypass (Multi­Host)
 +++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -896,6 +902,12 @@ Radius server configuration
   radius-server host 10.10.10.10 auth-port 1812 acct-port 1813 timeout 2 key useStrongerSecret 
   radius-server vsa send authentication 
 
+CoA configuration
+
+  aaa server radius dynamic-author
+   client 192.168.1.5 server-key useStrongerSecret
+  port 3799
+
 MAC Authentication bypass only 
 ++++++++++++++++++++++++++++++
 
@@ -931,6 +943,12 @@ Radius server configuration
 
   radius-server host 192.168.1.5 auth-port 1812 acct-port 1813 timeout 2 key useStrongerSecret 
   radius-server vsa send authentication 
+
+CoA configuration
+
+  aaa server radius dynamic-author
+   client 192.168.1.5 server-key useStrongerSecret
+  port 3799
 
 Port-­Security 
 +++++++++++++
