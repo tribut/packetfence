@@ -21,6 +21,8 @@ use pf::util qw(get_abbr_time);
 use pf::web::util;
 use pf::Authentication::constants;
 use pf::Authentication::Action;
+use pf::admin_roles;
+use pf::log;
 
 has 'source_type' => ( is => 'ro' );
 
@@ -42,6 +44,10 @@ has_field 'actions.value' =>
    type => 'Hidden',
    required => 1,
    messages => { required => 'Make sure all the actions are properly defined.' },
+   deflate_value_method => sub {
+     my ( $self, $value ) = @_;
+     return ref($value) ? join(",",@{$value}) : $value ;
+   },
   );
 
 # The templates block contains the dynamic fields of the rule definition.
@@ -65,6 +71,9 @@ has_field "${Actions::SET_ACCESS_LEVEL}_action" =>
    do_label => 0,
    wrapper => 0,
    options_method => \&options_access_level,
+   multiple => 1,
+   element_class => ['chzn-select'],
+   element_attr => {'data-placeholder' => 'Click to add an action' },
   );
 has_field "${Actions::SET_ROLE}_action" =>
   (
@@ -132,17 +141,8 @@ Populate the select field for the 'access level' template action.
 sub options_access_level {
     my $self = shift;
 
-    return
-      (
-       {
-        label => $self->_localize('None'),
-        value => $WEB_ADMIN_NONE,
-       },
-       {
-        label => $self->_localize('All'),
-        value => $WEB_ADMIN_ALL,
-       },
-      );
+    return map {   {value => $_, label => $self->_localize($_)  } } keys %ADMIN_ROLES;
+
 }
 
 =head2 options_roles
