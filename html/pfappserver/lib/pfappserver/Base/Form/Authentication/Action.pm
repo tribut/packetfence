@@ -73,7 +73,7 @@ has_field "${Actions::SET_ACCESS_LEVEL}_action" =>
    options_method => \&options_access_level,
    multiple => 1,
    element_class => ['chzn-select'],
-   element_attr => {'data-placeholder' => 'Click to add an action' },
+   element_attr => {'data-placeholder' => 'Click to add an access right' },
   );
 has_field "${Actions::SET_ROLE}_action" =>
   (
