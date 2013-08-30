@@ -111,6 +111,7 @@ if ( (defined($cgi->param('username') ) || $no_username_needed ) && ($cgi->param
   if (defined $value) {
       $logger->trace("Got unregdate $value for username $pid");
       %info = (%info, (unregdate => $value));
+  }
   my $nodeattributes = node_attributes($portalSession->getClientMac);
   if (pf::web::supports_windowsconfig_provisioning($portalSession)) {
       $cgi->param("do_not_deauth", $TRUE);
