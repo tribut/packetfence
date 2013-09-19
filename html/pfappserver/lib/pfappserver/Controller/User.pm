@@ -24,7 +24,6 @@ use pfappserver::Form::User::Create::Single;
 use pfappserver::Form::User::Create::Multiple;
 use pfappserver::Form::User::Create::Import;
 use pfappserver::Form::AdvancedSearch;
-use pf::admin_roles;
 
 BEGIN { extends 'pfappserver::Base::Controller'; }
 
@@ -40,7 +39,7 @@ __PACKAGE__->config(
 
 =cut
 
-sub index :Path :Args(0) {
+sub index :Path :Args(0) :AdminRole('USERS_READ') {
     my ( $self, $c ) = @_;
 
     $c->go('simple_search');
@@ -50,7 +49,7 @@ sub index :Path :Args(0) {
 
 =cut
 
-sub simple_search :SimpleSearch('User') :Local :Args() { }
+sub simple_search :SimpleSearch('User') :Local :Args() :AdminRole('USERS_READ') { }
 
 =head2 object
 
@@ -84,7 +83,7 @@ sub object :Chained('/') :PathPart('user') :CaptureArgs(1) {
 
 =cut
 
-sub view :Chained('object') :PathPart('read') :Args(0) {
+sub view :Chained('object') :PathPart('read') :Args(0) :AdminRole('USERS_READ') {
     my ($self, $c) = @_;
 
     my ($form);
@@ -99,7 +98,7 @@ sub view :Chained('object') :PathPart('read') :Args(0) {
 
 =cut
 
-sub delete :Chained('object') :PathPart('delete') :Args(0) : AdminRole('USERS_DELETE') {
+sub delete :Chained('object') :PathPart('delete') :Args(0) :AdminRole('USERS_DELETE') {
     my ($self, $c) = @_;
 
     my ($status, $result) = $c->model('User')->delete($c->stash->{user}->{pid});
@@ -115,7 +114,7 @@ sub delete :Chained('object') :PathPart('delete') :Args(0) : AdminRole('USERS_DE
 
 =cut
 
-sub update :Chained('object') :PathPart('update') :Args(0) {
+sub update :Chained('object') :PathPart('update') :Args(0) :AdminRole('USERS_UPDATE') {
     my ($self, $c) = @_;
 
     my ($form, $status, $message);
@@ -140,7 +139,7 @@ sub update :Chained('object') :PathPart('update') :Args(0) {
 
 =cut
 
-sub violations :Chained('object') :PathPart :Args(0) {
+sub violations :Chained('object') :PathPart :Args(0) :AdminRole('NODES_READ') {
     my ($self, $c) = @_;
     my ($status, $result) = $c->model('User')->violations($c->stash->{user}->{pid});
     if (is_success($status)) {
@@ -156,7 +155,7 @@ sub violations :Chained('object') :PathPart :Args(0) {
 
 =cut
 
-sub reset :Chained('object') :PathPart('reset') :Args(0) {
+sub reset :Chained('object') :PathPart('reset') :Args(0) :AdminRole('USERS_UPDATE') {
     my ($self, $c) = @_;
 
     my ($status, $message) = (HTTP_BAD_REQUEST, 'Some required parameters are missing.');
@@ -179,7 +178,7 @@ sub reset :Chained('object') :PathPart('reset') :Args(0) {
 
 =cut
 
-sub create :Local {
+sub create :Local :AdminRole('USERS_CREATE') {
     my ($self, $c) = @_;
 
     my (@roles, $form, $form_single, $form_multiple, $form_import, $params);
@@ -289,7 +288,7 @@ Perform advanced search for user
 
 =cut
 
-sub advanced_search :Local :Args() {
+sub advanced_search :Local :Args() :AdminRole('USERS_READ') {
     my ($self, $c, @args) = @_;
     my ($status,$status_msg,$result);
     my %search_results;
@@ -325,7 +324,7 @@ Display a printable view of users credentials.
 
 =cut
 
-sub print :Local {
+sub print :Local :AdminRole('USERS_UPDATE') {
     my ($self, $c) = @_;
 
     my ($status, $result);
@@ -348,7 +347,7 @@ Send users credentials by email.
 
 =cut
 
-sub mail :Local {
+sub mail :Local :AdminRole('USERS_UPDATE') {
     my ($self, $c) = @_;
 
     my ($status, $result);
