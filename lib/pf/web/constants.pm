@@ -72,7 +72,6 @@ Readonly::Scalar our $URL_OAUTH2_GITHUB         => '/oauth2/github';
 Readonly::Scalar our $URL_OAUTH2_GOOGLE         => '/oauth2/google';
 Readonly::Scalar our $URL_REMEDIATION           => '/remediation';
 Readonly::Scalar our $URL_RELEASE               => '/release';
-Readonly::Scalar our $URL_WIRELESS_PROFILE      => '/wireless-profile.mobileconfig';
 
 # guest related
 Readonly::Scalar our $URL_SIGNUP                => '/signup';
@@ -91,8 +90,10 @@ Readonly::Scalar our $ACL_SIGNUP_CGI            => '/cgi-perl/guest-selfregistra
 Readonly::Scalar our $MOD_PERL_WISPR            => '/wispr';
 Readonly::Scalar our $URL_GAMING_REGISTRATION   => '/gaming-registration';
 
-# windows profil engine
+# Provisioning engine
 Readonly::Scalar our $MOD_PERL_WINPROFIL        => '/winprofil/(.*)';
+Readonly::Scalar our $MOD_PERL_WIRELESS_PROFILE      => '/wireless-profile.mobileconfig';
+
 =head2 Apache Config related
 
 =over

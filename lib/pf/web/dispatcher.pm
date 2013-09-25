@@ -25,6 +25,7 @@ use pf::config;
 use pf::util;
 use pf::web::constants;
 use pf::proxypassthrough::constants;
+use pf::web::provisioning qw(apple_provisioning windows_provisioning android_provisioning);
 
 =head1 SUBROUTINES
 
@@ -44,7 +45,7 @@ Reference: http://perl.apache.org/docs/2.0/user/handlers/http.html#PerlTransHand
 sub translate {
     my $r = Apache::SSLLookup->new(shift);
     my $logger = Log::Log4perl->get_logger(__PACKAGE__);
-    $logger->trace("hitting translator with URL: " . $r->uri);
+    $logger->warn("hitting translator with URL: " . $r->uri);
 
     # Test if the hostname is include in the proxy_passthroughs configuration
     # In this case forward to mad_proxy
@@ -84,8 +85,14 @@ sub translate {
         }
         if ($r->uri =~ /$WEB::MOD_PERL_WINPROFIL/o) {
             $r->pnotes->{uri_winprofil} = $1;
-            $r->set_handlers( PerlResponseHandler => ['pf::web::winprofil'] );
+            $r->set_handlers( PerlResponseHandler => [\&windows_provisioning] );
         }
+        if ($r->uri =~ /$WEB::MOD_PERL_WIRELESS_PROFILE/o) {
+            $r->set_handlers( PerlResponseHandler => [\&apple_provisioning] );
+        }
+     #   if ($r->uri =~ /$WEB::MOD_PERL_ANDROID_PROFILE/o) {
+     #       $r->set_handlers( PerlResponseHandler => [\&android_provisioning] );
+     #   }
         return Apache2::Const::OK;
     }
 
