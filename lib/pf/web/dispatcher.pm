@@ -90,9 +90,9 @@ sub translate {
         if ($r->uri =~ /$WEB::MOD_PERL_WIRELESS_PROFILE/o) {
             $r->set_handlers( PerlResponseHandler => [\&apple_provisioning] );
         }
-     #   if ($r->uri =~ /$WEB::MOD_PERL_ANDROID_PROFILE/o) {
-     #       $r->set_handlers( PerlResponseHandler => [\&android_provisioning] );
-     #   }
+        if ($r->uri =~ /$WEB::MOD_PERL_ANDROID_PROFILE/o) {
+            $r->set_handlers( PerlResponseHandler => [\&android_provisioning] );
+        }
         return Apache2::Const::OK;
     }
 

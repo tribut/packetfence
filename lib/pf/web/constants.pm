@@ -92,7 +92,8 @@ Readonly::Scalar our $URL_GAMING_REGISTRATION   => '/gaming-registration';
 
 # Provisioning engine
 Readonly::Scalar our $MOD_PERL_WINPROFIL        => '/winprofil/(.*)';
-Readonly::Scalar our $MOD_PERL_WIRELESS_PROFILE      => '/wireless-profile.mobileconfig';
+Readonly::Scalar our $MOD_PERL_WIRELESS_PROFILE => '/wireless-profile.mobileconfig';
+Readonly::Scalar our $MOD_PERL_ANDROID_PROFILE  => '/profile.xml';
 
 =head2 Apache Config related
 
