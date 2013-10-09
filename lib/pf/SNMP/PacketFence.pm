@@ -54,27 +54,27 @@ sub sendLocalReAssignVlanTrap {
         return 0;
     }
     if (defined($mac)) {
-    my $result = $this->{_sessionWrite}->trap(
-        -genericTrap => Net::SNMP::ENTERPRISE_SPECIFIC,
-        -agentaddr   => $switch_ip,
-        -varbindlist => [
-            '1.3.6.1.6.3.1.1.4.1.0', Net::SNMP::OBJECT_IDENTIFIER, '1.3.6.1.4.1.29464.1.1', 
-            "1.3.6.1.2.1.2.2.1.1.$ifIndex", Net::SNMP::INTEGER,    $ifIndex,
-            "1.3.6.1.2.1.2.2.1.1.$ifIndex", Net::SNMP::INTEGER,    $connection_type,
-            "1.3.6.1.4.1.29464.1.3", Net::SNMP::OCTET_STRING,      $mac,
-        ]
-    );
+        my $result = $this->{_sessionWrite}->trap(
+            -genericTrap => Net::SNMP::ENTERPRISE_SPECIFIC,
+            -agentaddr   => $switch_ip,
+            -varbindlist => [
+                '1.3.6.1.6.3.1.1.4.1.0', Net::SNMP::OBJECT_IDENTIFIER, '1.3.6.1.4.1.29464.1.1', 
+                "1.3.6.1.2.1.2.2.1.1.$ifIndex", Net::SNMP::INTEGER,    $ifIndex,
+                "1.3.6.1.2.1.2.2.1.1.$ifIndex", Net::SNMP::INTEGER,    $connection_type,
+                "1.3.6.1.4.1.29464.1.3", Net::SNMP::OCTET_STRING,      $mac,
+            ]
+        );
     } else {
-    my $result = $this->{_sessionWrite}->trap(
-        -genericTrap => Net::SNMP::ENTERPRISE_SPECIFIC,
-        -agentaddr   => $switch_ip,
-        -varbindlist => [
-            '1.3.6.1.6.3.1.1.4.1.0', Net::SNMP::OBJECT_IDENTIFIER, '1.3.6.1.4.1.29464.1.1',
-            "1.3.6.1.2.1.2.2.1.1.$ifIndex", Net::SNMP::INTEGER,    $ifIndex,
-            "1.3.6.1.2.1.2.2.1.1.$ifIndex", Net::SNMP::INTEGER,    $connection_type,
-        ]
-    );
-
+        my $result = $this->{_sessionWrite}->trap(
+            -genericTrap => Net::SNMP::ENTERPRISE_SPECIFIC,
+            -agentaddr   => $switch_ip,
+            -varbindlist => [
+                '1.3.6.1.6.3.1.1.4.1.0', Net::SNMP::OBJECT_IDENTIFIER, '1.3.6.1.4.1.29464.1.1',
+                "1.3.6.1.2.1.2.2.1.1.$ifIndex", Net::SNMP::INTEGER,    $ifIndex,
+                "1.3.6.1.2.1.2.2.1.1.$ifIndex", Net::SNMP::INTEGER,    $connection_type,
+            ]
+        );
+    }
     if ( !$result ) {
         $logger->error(
             "error sending SNMP trap: " . $this->{_sessionWrite}->error() );
