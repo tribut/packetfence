@@ -2778,7 +2778,9 @@ sub handleReAssignVlanTrapForWiredMacAuth {
         return;
     }
 
-    my $mac = $locationlog[0]->{'mac'};
+    if (!defined($mac)) {
+        $mac = $locationlog[0]->{'mac'};
+    }
     my $hasPhone = $this->hasPhoneAtIfIndex($ifIndex);
 
     # TODO extract that behavior in a method call in pf::vlan so it can be overridden easily
