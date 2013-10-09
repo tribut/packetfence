@@ -53,8 +53,9 @@ sub sendLocalReAssignVlanTrap {
     if ( !$this->connectWrite() ) {
         return 0;
     }
+    my $result;
     if (defined($mac)) {
-        my $result = $this->{_sessionWrite}->trap(
+        $result = $this->{_sessionWrite}->trap(
             -genericTrap => Net::SNMP::ENTERPRISE_SPECIFIC,
             -agentaddr   => $switch_ip,
             -varbindlist => [
@@ -65,7 +66,7 @@ sub sendLocalReAssignVlanTrap {
             ]
         );
     } else {
-        my $result = $this->{_sessionWrite}->trap(
+        $result = $this->{_sessionWrite}->trap(
             -genericTrap => Net::SNMP::ENTERPRISE_SPECIFIC,
             -agentaddr   => $switch_ip,
             -varbindlist => [
