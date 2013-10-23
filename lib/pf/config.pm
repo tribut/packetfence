@@ -76,7 +76,7 @@ BEGIN {
     @EXPORT = qw(
         @listen_ints @dhcplistener_ints @ha_ints $monitor_int
         @internal_nets @routed_isolation_nets @routed_registration_nets @inline_nets $management_network @external_nets
-        @inline_enforcement_nets @vlan_enforcement_nets
+        @inline_enforcement_nets @inline_enforcement_nets @vlan_enforcement_nets
         %guest_self_registration
         $IPTABLES_MARK_UNREG $IPTABLES_MARK_REG $IPTABLES_MARK_ISOLATION
         $IPSET_VERSION %mark_type_to_str %mark_type
@@ -88,7 +88,8 @@ BEGIN {
         $WIPS_VID @VALID_TRIGGER_TYPES $thread $default_pid $fqdn
         $FALSE $TRUE $YES $NO
         $IF_INTERNAL $IF_ENFORCEMENT_VLAN $IF_ENFORCEMENT_INLINE
-        $WIRELESS_802_1X $WIRELESS_MAC_AUTH $WIRED_802_1X $WIRED_MAC_AUTH $WIRED_SNMP_TRAPS $UNKNOWN $INLINE
+        $NET_TYPE_INLINE_L3
+        $WIRELESS_802_1X $WIRELESS_MAC_AUTH $WIRED_802_1X $WIRED_MAC_AUTH $WIRED_SNMP_TRAPS $UNKNOWN $INLINE $INLINEL2 $INLINEL3
         $WIRELESS $WIRED $EAP
         $WEB_ADMIN_NONE $WEB_ADMIN_ALL
         $VOIP $NO_VOIP $NO_PORT $NO_VLAN
@@ -155,14 +156,19 @@ Readonly::Scalar our $OS => os_detection();
 # Interface types
 Readonly our $IF_INTERNAL => 'internal';
 
-# Interface enforcement techniques
+# Interface enforcement techniques. 'inline' is deprecated in favor of 'inlinel2'.
 Readonly our $IF_ENFORCEMENT_VLAN => 'vlan';
 Readonly our $IF_ENFORCEMENT_INLINE => 'inline';
+Readonly our $IF_ENFORCEMENT_INLINE_L2 => 'inlinel2';
+Readonly our $IF_ENFORCEMENT_INLINE_L3 => 'inlinel3';
 
-# Network configuration parameters
+
+# Network configuration parameters. 
 Readonly our $NET_TYPE_VLAN_REG => 'vlan-registration';
 Readonly our $NET_TYPE_VLAN_ISOL => 'vlan-isolation';
 Readonly our $NET_TYPE_INLINE => 'inline';
+Readonly our $NET_TYPE_INLINE_L2 => 'inlinel2';
+Readonly our $NET_TYPE_INLINE_L3 => 'inlinel3';
 
 # connection type constants
 Readonly our $WIRELESS_802_1X   => 0b110000001;
@@ -171,6 +177,8 @@ Readonly our $WIRED_802_1X      => 0b011000100;
 Readonly our $WIRED_MAC_AUTH    => 0b001001000;
 Readonly our $WIRED_SNMP_TRAPS  => 0b001010000;
 Readonly our $INLINE            => 0b000100000;
+Readonly our $INLINEL2          => 0b000100000;
+Readonly our $INLINEL3          => 0b000100000;
 Readonly our $UNKNOWN           => 0b000000000;
 # masks to be used on connection types
 Readonly our $WIRELESS => 0b100000000;
@@ -191,6 +199,8 @@ Readonly our $WEB_ADMIN_ALL => 4294967295;
     'Ethernet-NoEAP'        => $WIRED_MAC_AUTH,
     'SNMP-Traps'            => $WIRED_SNMP_TRAPS,
     'Inline'                => $INLINE,
+    'InlineL2'              => $INLINEL2,
+    'InlineL3'              => $INLINEL3,
     'WIRED_MAC_AUTH'        => $WIRED_MAC_AUTH,
 );
 %connection_group = (
@@ -207,6 +217,8 @@ Readonly our $WEB_ADMIN_ALL => 4294967295;
     $WIRED_MAC_AUTH => 'WIRED_MAC_AUTH',
     $WIRED_SNMP_TRAPS => 'SNMP-Traps',
     $INLINE => 'Inline',
+    $INLINEL2 => 'InlineL2',
+    $INLINEL3 => 'InlineL3',
     $UNKNOWN => '',
 );
 %connection_group_to_str = (
@@ -216,8 +228,6 @@ Readonly our $WEB_ADMIN_ALL => 4294967295;
 );
 
 # String to constant hash
-# these duplicated in html/admin/common.php for web admin display
-# changes here should be reflected there
 %connection_type_explained = (
     $WIRELESS_802_1X => 'WiFi 802.1X',
     $WIRELESS_MAC_AUTH => 'WiFi MAC Auth',
@@ -225,6 +235,8 @@ Readonly our $WEB_ADMIN_ALL => 4294967295;
     $WIRED_MAC_AUTH => 'Wired MAC Auth',
     $WIRED_SNMP_TRAPS => 'Wired SNMP',
     $INLINE => 'Inline',
+    $INLINEL2 => 'InlineL2',
+    $INLINEL3 => 'InlineL3',
     $UNKNOWN => 'Unknown',
 );
 
@@ -527,13 +539,15 @@ sub readPfConfigFiles {
                         if ( $type eq 'internal' ) {
                             push @internal_nets, $int_obj;
                             if ($Config{$interface}{'enforcement'} eq $IF_ENFORCEMENT_VLAN) {
-                              push @vlan_enforcement_nets, $int_obj;
-                            } elsif ($Config{$interface}{'enforcement'} eq $IF_ENFORCEMENT_INLINE) {
-                                push @inline_enforcement_nets, $int_obj;
-                            }
-                            push @listen_ints, $int if ( $int !~ /:\d+$/ );
+				push @vlan_enforcement_nets, $int_obj;
+                            } elsif ($Config{$interface}{'enforcement'} eq $IF_ENFORCEMENT_INLINE ||
+				     $Config{$interface}{'enforcement'} eq $IF_ENFORCEMENT_INLINE_L2 ||
+				     $Config{$interface}{'enforcement'} eq $IF_ENFORCEMENT_INLINE_L3) {
+				push @inline_enforcement_nets, $int_obj;
+			    }
+			    push @listen_ints, $int if ( $int !~ /:\d+$/ );
                         } elsif ( $type eq 'managed' || $type eq 'management' ) {
-
+			    
                             $int_obj->tag("vip", _fetch_virtual_ip($int, $interface));
                             $management_network = $int_obj;
                             # adding management to dhcp listeners by default (if it's not already there)
@@ -767,7 +781,7 @@ sub get_network_type {
     if (!defined($ConfigNetworks{$network}{'type'})) {
         # not defined
         return;
-
+	
     } elsif ($ConfigNetworks{$network}{'type'} =~ /^$NET_TYPE_VLAN_REG$/i) {
         # vlan-registration
         return $NET_TYPE_VLAN_REG;
@@ -775,11 +789,13 @@ sub get_network_type {
     } elsif ($ConfigNetworks{$network}{'type'} =~ /^$NET_TYPE_VLAN_ISOL$/i) {
         # vlan-isolation
         return $NET_TYPE_VLAN_ISOL;
-
-    } elsif ($ConfigNetworks{$network}{'type'} =~ /^$NET_TYPE_INLINE$/i) {
+	
+    } elsif ($ConfigNetworks{$network}{'type'} =~ /^$NET_TYPE_INLINE$/i ||
+	     $ConfigNetworks{$network}{'type'} =~ /^$NET_TYPE_INLINE_L2$/i ||
+	     $ConfigNetworks{$network}{'type'} =~ /^$NET_TYPE_INLINE_L3$/i) {
         # inline
         return $NET_TYPE_INLINE;;
-
+	
     } elsif ($ConfigNetworks{$network}{'type'} =~ /^registration$/i) {
         # deprecated registration
         $logger->warn("networks.conf network type registration is deprecated use vlan-registration instead");
