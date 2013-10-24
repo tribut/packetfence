@@ -181,7 +181,8 @@ sub service_ctl {
                             my $pid = service_ctl( $daemon, "status" );
                             # TODO: push all these per-daemon initialization into pf::services::...
                             require pf::freeradius;
-                            pf::freeradius::freeradius_populate_nas_config();
+                            require pf::ConfigStore::SwitchOverlay;
+                            pf::freeradius::freeradius_populate_nas_config(\%pf::ConfigStore::SwitchOverlay::SwitchConfig);
 
                         }
                         return launchService($daemon,$service);
