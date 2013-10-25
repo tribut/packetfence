@@ -220,7 +220,7 @@ Requires: perl(CHI::Driver::Memcached)
 Requires: perl(File::Flock)
 Requires: perl(Perl::Version)
 Requires: perl(Cache::FastMmap)
-Requires: perl(Moo) = 1.000006
+Requires: perl(Moo) >= 1.0
 Requires: perl(Term::ANSIColor)
 Requires: perl(IO::Interactive)
 # configuration-wizard
