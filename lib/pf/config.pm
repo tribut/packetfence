@@ -539,15 +539,15 @@ sub readPfConfigFiles {
                         if ( $type eq 'internal' ) {
                             push @internal_nets, $int_obj;
                             if ($Config{$interface}{'enforcement'} eq $IF_ENFORCEMENT_VLAN) {
-				push @vlan_enforcement_nets, $int_obj;
+                                push @vlan_enforcement_nets, $int_obj;
                             } elsif ($Config{$interface}{'enforcement'} eq $IF_ENFORCEMENT_INLINE ||
-				     $Config{$interface}{'enforcement'} eq $IF_ENFORCEMENT_INLINE_L2 ||
-				     $Config{$interface}{'enforcement'} eq $IF_ENFORCEMENT_INLINE_L3) {
-				push @inline_enforcement_nets, $int_obj;
-			    }
-			    push @listen_ints, $int if ( $int !~ /:\d+$/ );
+                                     $Config{$interface}{'enforcement'} eq $IF_ENFORCEMENT_INLINE_L2 ||
+                                     $Config{$interface}{'enforcement'} eq $IF_ENFORCEMENT_INLINE_L3) {
+                                push @inline_enforcement_nets, $int_obj;
+                            }
+                            push @listen_ints, $int if ( $int !~ /:\d+$/ );
                         } elsif ( $type eq 'managed' || $type eq 'management' ) {
-			    
+                            
                             $int_obj->tag("vip", _fetch_virtual_ip($int, $interface));
                             $management_network = $int_obj;
                             # adding management to dhcp listeners by default (if it's not already there)
@@ -781,7 +781,7 @@ sub get_network_type {
     if (!defined($ConfigNetworks{$network}{'type'})) {
         # not defined
         return;
-	
+        
     } elsif ($ConfigNetworks{$network}{'type'} =~ /^$NET_TYPE_VLAN_REG$/i) {
         # vlan-registration
         return $NET_TYPE_VLAN_REG;
@@ -789,13 +789,13 @@ sub get_network_type {
     } elsif ($ConfigNetworks{$network}{'type'} =~ /^$NET_TYPE_VLAN_ISOL$/i) {
         # vlan-isolation
         return $NET_TYPE_VLAN_ISOL;
-	
+        
     } elsif ($ConfigNetworks{$network}{'type'} =~ /^$NET_TYPE_INLINE$/i ||
-	     $ConfigNetworks{$network}{'type'} =~ /^$NET_TYPE_INLINE_L2$/i ||
-	     $ConfigNetworks{$network}{'type'} =~ /^$NET_TYPE_INLINE_L3$/i) {
+             $ConfigNetworks{$network}{'type'} =~ /^$NET_TYPE_INLINE_L2$/i ||
+             $ConfigNetworks{$network}{'type'} =~ /^$NET_TYPE_INLINE_L3$/i) {
         # inline
         return $NET_TYPE_INLINE;;
-	
+        
     } elsif ($ConfigNetworks{$network}{'type'} =~ /^registration$/i) {
         # deprecated registration
         $logger->warn("networks.conf network type registration is deprecated use vlan-registration instead");
