@@ -20,7 +20,7 @@ use threads::shared;
 
 use pf::config;
 use pf::node qw(node_attributes node_exist);
-use pf::SNMP::constants;
+use pf::Switch::constants;
 use pf::util;
 use pf::violation qw(violation_count_trap violation_exist_open violation_view_top);
 
@@ -126,7 +126,7 @@ sub doWeActOnThisTrap {
 
     # ifTypes: http://www.iana.org/assignments/ianaiftype-mib
     my $ifType = $switch->getIfType($ifIndex);
-    # see ifType documentation in pf::SNMP::constants
+    # see ifType documentation in pf::Switch::constants
     if ( ( $ifType == $SNMP::ETHERNET_CSMACD ) || ( $ifType == $SNMP::GIGABIT_ETHERNET ) ) {
         my @upLinks = $switch->getUpLinks();
         if ( @upLinks && $upLinks[0] == -1 ) {
@@ -171,7 +171,7 @@ Return values:
 =cut
 
 sub getViolationVlan {
-    # $switch is the switch object (pf::SNMP)
+    # $switch is the switch object (pf::Switch)
     # $ifIndex is the ifIndex of the computer connected to
     # $mac is the mac connected
     # $conn_type is set to the connnection type expressed as the constant in pf::config
@@ -253,7 +253,7 @@ Return values:
 =cut
 
 sub getRegistrationVlan {
-    #$switch is the switch object (pf::SNMP)
+    #$switch is the switch object (pf::Switch)
     #$ifIndex is the ifIndex of the computer connected to
     #$mac is the mac connected
     #$node_info is the node info hashref (result of pf::node's node_attributes on $mac)
@@ -309,7 +309,7 @@ Return values:
 # Developers note: If you modify this sub, make sure to replicate the change in pf::vlan::custom for consistency
 # purposes.
 sub getNormalVlan {
-    #$switch is the switch object (pf::SNMP)
+    #$switch is the switch object (pf::Switch)
     #$ifIndex is the ifIndex of the computer connected to
     #$mac is the mac connected
     #$node_info is the node info hashref (result of pf::node's node_attributes on $mac)
@@ -378,7 +378,7 @@ Handling the Inline VLAN Assignment
 =cut
 
 sub getInlineVlan {
-    #$switch is the switch object (pf::SNMP)
+    #$switch is the switch object (pf::Switch)
     #$ifIndex is the ifIndex of the computer connected to
     #$mac is the mac connected
     #$node_info is the node info hashref (result of pf::node's node_attributes on $mac)
