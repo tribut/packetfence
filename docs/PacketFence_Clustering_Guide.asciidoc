@@ -329,10 +329,10 @@ In `conf/pf.conf` :
 
 ----
 [database]
-host=127.0.0.1
+host=<management_ip_address>
 
 [monitoring]
-db_host=127.0.0.1
+db_host=<management_ip_address>
 ....
 ----
 
@@ -340,7 +340,7 @@ In `conf/pfconfig.conf` :
 
 ----
 [mysql]
-host=127.0.0.1
+host=<management_ip_address>
 ....
 ----
 
